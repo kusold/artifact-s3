@@ -5,7 +5,7 @@ Core library for S3-based artifact storage in GitHub Actions. This library power
 ## Installation
 
 ```bash
-npm install @action-artifact-s3/artifact-s3
+npm install @kusold/artifact-s3
 ```
 
 ## Usage

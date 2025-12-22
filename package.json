@@ -1,5 +1,5 @@
 {
-  "name": "@action-artifact-s3/artifact-s3",
+  "name": "@kusold/artifact-s3",
   "version": "1.0.0",
   "description": "Core library for S3-based artifact storage in GitHub Actions",
   "main": "dist/index.js",
