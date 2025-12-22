@@ -22,12 +22,20 @@ export class S3ClientWrapper {
     this.bucket = config.bucket
     this.prefix = config.prefix?.replace(/\/+$/, '') ?? ''
 
-    this.client = new S3Client({
+    // Only include credentials in config if explicitly provided
+    // Otherwise, let the SDK use its default credential provider chain
+    // (environment variables, shared credentials file, etc.)
+    const clientConfig: ConstructorParameters<typeof S3Client>[0] = {
       region: config.region ?? 'us-east-1',
       endpoint: config.endpoint,
       forcePathStyle: config.forcePathStyle ?? !!config.endpoint,
-      credentials: config.credentials,
-    })
+    }
+
+    if (config.credentials) {
+      clientConfig.credentials = config.credentials
+    }
+
+    this.client = new S3Client(clientConfig)
   }
 
   /**
