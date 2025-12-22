@@ -13,7 +13,7 @@ npm install @kusold/artifact-s3
 ### Upload an Artifact
 
 ```typescript
-import { uploadArtifact, S3Config, GitHubContext } from '@action-artifact-s3/artifact-s3'
+import { uploadArtifact, S3Config, GitHubContext } from '@kusold/artifact-s3'
 
 const s3Config: S3Config = {
   bucket: 'my-artifacts-bucket',
@@ -45,7 +45,7 @@ console.log(`Digest: ${result.digest}`)
 ### Download an Artifact
 
 ```typescript
-import { downloadArtifact, S3Config, GitHubContext } from '@action-artifact-s3/artifact-s3'
+import { downloadArtifact, S3Config, GitHubContext } from '@kusold/artifact-s3'
 
 const result = await downloadArtifact(s3Config, context, {
   name: 'my-artifact',
@@ -58,7 +58,7 @@ console.log(`Downloaded ${result.filesDownloaded} files to ${result.downloadPath
 ### List Artifacts
 
 ```typescript
-import { listArtifacts, S3Config, GitHubContext } from '@action-artifact-s3/artifact-s3'
+import { listArtifacts, S3Config, GitHubContext } from '@kusold/artifact-s3'
 
 const artifacts = await listArtifacts(s3Config, context)
 
