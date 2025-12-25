@@ -182,8 +182,14 @@ export class ArtifactDownloader {
       // Download the file
       const { body, metadata } = await this.s3.downloadFile(file.key)
 
+      core.debug(`File metadata for ${relativePath}: ${JSON.stringify(metadata)}`)
+
       // Check if file is compressed
-      const isCompressed = metadata?.['compressed'] === 'true'
+      // Note: S3 metadata keys are case-insensitive and may be returned in different cases
+      // by different S3-compatible implementations
+      const isCompressed = this.getMetadataValue(metadata, 'compressed') === 'true'
+      
+      core.debug(`isCompressed: ${isCompressed}`)
 
       if (isCompressed) {
         // Decompress and write
@@ -211,5 +217,30 @@ export class ArtifactDownloader {
       chunks.push(Buffer.from(chunk))
     }
     return Buffer.concat(chunks).toString('utf-8')
+  }
+
+  /**
+   * Get a metadata value case-insensitively
+   * S3-compatible stores may return metadata keys in different cases
+   */
+  private getMetadataValue(
+    metadata: Record<string, string> | undefined,
+    key: string
+  ): string | undefined {
+    if (!metadata) return undefined
+    
+    // Try exact match first
+    if (metadata[key] !== undefined) return metadata[key]
+    
+    // Try lowercase
+    const lowerKey = key.toLowerCase()
+    if (metadata[lowerKey] !== undefined) return metadata[lowerKey]
+    
+    // Try case-insensitive search
+    for (const [k, v] of Object.entries(metadata)) {
+      if (k.toLowerCase() === lowerKey) return v
+    }
+    
+    return undefined
   }
 }
