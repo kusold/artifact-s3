@@ -104,6 +104,7 @@ export class S3ClientWrapper {
   async downloadFile(key: string): Promise<{
     body: Readable
     contentLength: number
+    contentType?: string
     metadata?: Record<string, string>
   }> {
     const result = await this.client.send(
@@ -120,6 +121,7 @@ export class S3ClientWrapper {
     return {
       body: result.Body as Readable,
       contentLength: result.ContentLength ?? 0,
+      contentType: result.ContentType,
       metadata: result.Metadata,
     }
   }

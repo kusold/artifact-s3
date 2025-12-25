@@ -180,16 +180,21 @@ export class ArtifactDownloader {
       core.debug(`Downloading: ${relativePath}`)
 
       // Download the file
-      const { body, metadata } = await this.s3.downloadFile(file.key)
+      const { body, contentType, metadata } = await this.s3.downloadFile(file.key)
 
       core.debug(`File metadata for ${relativePath}: ${JSON.stringify(metadata)}`)
+      core.debug(`File content type for ${relativePath}: ${contentType}`)
 
       // Check if file is compressed
-      // Note: S3 metadata keys are case-insensitive and may be returned in different cases
-      // by different S3-compatible implementations
-      const isCompressed = this.getMetadataValue(metadata, 'compressed') === 'true'
+      // We check multiple indicators since different S3-compatible implementations
+      // may handle metadata differently:
+      // 1. Custom metadata 'compressed' flag (set during upload)
+      // 2. Content-Type being 'application/gzip' (also set during upload)
+      const compressedMetadata = this.getMetadataValue(metadata, 'compressed') === 'true'
+      const gzipContentType = contentType === 'application/gzip'
+      const isCompressed = compressedMetadata || gzipContentType
       
-      core.debug(`isCompressed: ${isCompressed}`)
+      core.debug(`isCompressed: ${isCompressed} (metadata: ${compressedMetadata}, contentType: ${gzipContentType})`)
 
       if (isCompressed) {
         // Decompress and write
